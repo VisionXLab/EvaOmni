@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+title: "EvaOmni: An Evidence-Grounded Benchmark for Audio-Visual Reasoning"
+message: "If you use EvaOmni, please cite this work."
+authors:
+  - family-names: Hu
+    given-names: Xiaoxing
+  - family-names: Yao
+    given-names: Wenxi
+  - family-names: Shi
+    given-names: Chaoyuan
+  - family-names: Ye
+    given-names: Ziqi
+  - family-names: Guo
+    given-names: Xiaorong
+  - family-names: Li
+    given-names: Peixuan
+  - family-names: Sun
+    given-names: Zhuoran
+  - family-names: Gong
+    given-names: Ziyang
+  - family-names: Zhang
+    given-names: Peiyuan
+  - family-names: Liu
+    given-names: Mingxin
+  - family-names: Ma
+    given-names: Shuran
+  - family-names: Liu
+    given-names: Hongbo
+  - family-names: Yu
+    given-names: Xiaomin
+  - family-names: Tian
+    given-names: Yu
+  - family-names: Wang
+    given-names: Wentao
+  - family-names: Yang
+    given-names: Zhenjie
+  - family-names: Hu
+    given-names: Jian
+  - family-names: Shen
+    given-names: Yunhang
+  - family-names: Cao
+    given-names: Haoyu
+  - family-names: Yang
+    given-names: Xue
+repository-code: "https://github.com/VisionXLab/EvaOmni"
+url: "https://github.com/VisionXLab/EvaOmni"
+license: MIT
