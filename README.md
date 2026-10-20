@@ -12,7 +12,7 @@
   <a href="https://xxx.xxx"><img src="https://img.shields.io/badge/arXiv-xxxx.xxxxx-B31B1B?style=flat&logo=arxiv&logoColor=white" alt="arXiv: xxxx.xxxxx"></a>
 </p>
 
-**If EvaOmni is useful for your research, please consider starring this repository and citing our work.**
+**If EvaOmni is useful for your research, please consider starring this repository and citing our work！ ⭐⭐⭐**
 
 </div>
 
