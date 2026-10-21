@@ -10,6 +10,7 @@
   <a href="https://modelscope.cn/datasets/VisionXLab/EvaOmni-Dataset"><img src="https://img.shields.io/badge/ModelScope-Dataset-624AFF?style=flat" alt="ModelScope Dataset"></a>
   <a href="https://huggingface.co/datasets/VisionXLab/EvaOmni-Dataset"><img src="https://img.shields.io/badge/Hugging%20Face-Dataset-FFD21E?style=flat&logo=huggingface" alt="Hugging Face Dataset"></a>
   <a href="https://arxiv.org/pdf/2610.28444"><img src="https://img.shields.io/badge/arXiv-2610.28444-B31B1B?style=flat&logo=arxiv&logoColor=white" alt="arXiv: 2610.28444"></a>
+  <a href="https://xiaoxing2001.github.io/EvaOmni.github.io/"><img src="https://img.shields.io/badge/Project-Homepage-007EC6?style=flat" alt="Project Homepage"></a>
 </p>
 
 **If EvaOmni is useful for your research, please consider starring this repository and citing our work！ ⭐⭐⭐**
