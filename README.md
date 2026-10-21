@@ -9,7 +9,7 @@
 <p>
   <a href="https://modelscope.cn/datasets/VisionXLab/EvaOmni-Dataset"><img src="https://img.shields.io/badge/ModelScope-Dataset-624AFF?style=flat" alt="ModelScope Dataset"></a>
   <a href="https://huggingface.co/datasets/VisionXLab/EvaOmni-Dataset"><img src="https://img.shields.io/badge/Hugging%20Face-Dataset-FFD21E?style=flat&logo=huggingface" alt="Hugging Face Dataset"></a>
-  <a href="https://xxx.xxx"><img src="https://img.shields.io/badge/arXiv-xxxx.xxxxx-B31B1B?style=flat&logo=arxiv&logoColor=white" alt="arXiv: xxxx.xxxxx"></a>
+  <a href="https://arxiv.org/pdf/2610.28444"><img src="https://img.shields.io/badge/arXiv-2610.28444-B31B1B?style=flat&logo=arxiv&logoColor=white" alt="arXiv: 2610.28444"></a>
 </p>
 
 **If EvaOmni is useful for your research, please consider starring this repository and citing our work！ ⭐⭐⭐**
@@ -182,14 +182,12 @@ The script displays progress and saves each completed result. Rerun the same com
 
 ## 📚 Citation
 
-If you use EvaOmni, please cite the project using the entry below. Paper metadata will be added when an official paper URL is available:
-
 ```bibtex
-@misc{hu2026evaomni,
-  title        = {EvaOmni: An Evidence-Grounded Benchmark for Audio-Visual Reasoning},
-  author       = {Hu, Xiaoxing and Yao, Wenxi and Shi, Chaoyuan and Ye, Ziqi and Guo, Xiaorong and Li, Peixuan and Sun, Zhuoran and Gong, Ziyang and Zhang, Peiyuan and Liu, Mingxin and Ma, Shuran and Liu, Hongbo and Yu, Xiaomin and Tian, Yu and Wang, Wentao and Yang, Zhenjie and Hu, Jian and Shen, Yunhang and Cao, Haoyu and Yang, Xue},
-  year         = {2026},
-  url          = {https://arxiv.xxx}
+@article{hu2026evaomni,
+  title={EvaOmni: An Evidence-Grounded Benchmark for Audio-Visual Reasoning},
+  author={Hu, Xiaoxing and Yao, Wenxi and Shi, Chaoyuan and Ye, Ziqi and Guo, Xiaorong and Li, Peixuan and Sun, Zhuoran and Gong, Ziyang and Zhang, Peiyuan and Liu, Mingxin and Ma, Shuran and Liu, Hongbo and Yu, Xiaomin and Tian, Yu and Wang, Wentao and Yang, Zhenjie and Hu, Jian and Shen, Yunhang and Cao, Haoyu and Yang, Xue},
+  journal={arXiv preprint arXiv:2610.28444},
+  year={2026}
 }
 ```
 
