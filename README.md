@@ -1,5 +1,7 @@
 <div align="center">
 
+[English](README.md) | **简体中文**
+
 # EvaOmni : An Evidence-Grounded Benchmark for Audio-Visual Reasoning
 
 <a href="https://scholar.google.com/citations?user=zBM8_XkAAAAJ&amp;hl=zh-CN">Xiaoxing Hu</a><sup>†</sup>, <a href="https://openreview.net/profile?id=~Wenxi_Yao1">Wenxi Yao</a><sup>&#42;</sup>, <a href="https://openreview.net/profile?id=~Chaoyuan_Shi1">Chaoyuan Shi</a><sup>&#42;</sup>, <a href="https://scholar.google.com/citations?user=GA0gV5cAAAAJ&amp;hl=zh-CN">Ziqi Ye</a><sup>&#42;</sup>, <a href="https://openreview.net/profile?id=~Xiaorong_Guo1">Xiaorong Guo</a>, <a href="https://openreview.net/profile?id=~Peixuan_Li3">Peixuan Li</a>, <a href="https://openreview.net/profile?id=~Zhuoran_Sun2">Zhuoran Sun</a>, <a href="https://cuzyoung.github.io/ZiyangGong.github.io/">Ziyang Gong</a>, <a href="https://zzppppy.github.io/">Peiyuan Zhang</a>, <a href="https://openreview.net/profile?id=~Mingxin_Liu3">Mingxin Liu</a>, <a href="https://openreview.net/profile?id=~Shuran_Ma1">Shuran Ma</a>, <a href="https://scholar.google.com/citations?user=GcgqbCUAAAAJ&amp;hl=zh-CN">Hongbo Liu</a>, <a href="https://openreview.net/profile?id=~Xiaomin_Yu1">Xiaomin Yu</a>, <a href="https://t1ans1r.github.io/">Yu Tian</a>, <a href="https://scholar.google.com.hk/citations?user=CX-o0V4AAAAJ&amp;hl=zh-CN">Wentao Wang</a>, <a href="https://github.com/jayyoung0802">Zhenjie Yang</a>, <a href="https://lwpyh.github.io/">Jian Hu</a>, <a href="https://shenyunhang.github.io/">Yunhang Shen</a>, <a href="https://scholar.google.com/citations?user=LV8ejn8AAAAJ&amp;hl=zh-CN">Haoyu Cao</a>, and <a href="https://yangxue.site/">Xue Yang</a><sup>✉</sup>
@@ -13,7 +15,7 @@
   <a href="https://xiaoxing2001.github.io/EvaOmni.github.io/"><img src="https://img.shields.io/badge/Project-Homepage-007EC6?style=flat" alt="Project Homepage"></a>
 </p>
 
-**If EvaOmni is useful for your research, please consider starring this repository and citing our work！ ⭐⭐⭐**
+**If EvaOmni is useful for your research, please consider starring this repository and citing our work! ⭐⭐⭐**
 
 </div>
 
@@ -34,7 +36,7 @@ EvaOmni is an evidence-grounded benchmark for evaluating audio-visual reasoning 
 - **Shortcut screening:** construction includes text-only, audio-only, and visual-only checks.
 - **Fine-grained taxonomy:** 1,027 questions from 392 videos cover 15 capabilities across 3 reasoning levels.
 - **Grounded metrics:** Coverage Grounded Score (C.G.) measures evidence coverage, while Bottleneck Grounded Score (B.G.) measures the weaker of the two modality-localization scores.
-- **Transparent evaluation:** this initial release includes a runnable metric evaluator, a prediction schema, and a worked example. Provider-specific inference adapters and the original prompt templates are planned.
+- **Transparent evaluation:** this release includes a runnable metric evaluator, Gemini and MiMo adapters, a prediction schema, and a worked example.
 
 <p align="center">
   <img src="assets/example.png" width="100%" alt="EvaOmni annotation pipeline and an example with timestamped audio and visual evidence">
@@ -165,21 +167,94 @@ data/
     └── ...
 ```
 
-### 2. Run evaluation script
+### 2. Choose an adapter and run the evaluation
 
-Set `model_name`, `base_url`, and `api_key` in [`scripts/eval_example.py`](scripts/eval_example.py). Implement `call_api()` using your provider's SDK or HTTP API, ensuring that both video and audio are supplied, then remove the unconditional API-adapter placeholder error in `main()`. With Python 3.10+, run the following command from the repository root:
+Each provider has its own adapter under [`scripts/`](scripts/). All of them read the same three variables from the environment; nothing is hardcoded and `API_KEY` is never written to the output files. Copy [`.env.example`](.env.example) to `.env` (gitignored) and fill it in, or export the variables in your shell.
+
+| Adapter | Protocol | Supported models |
+|---|---|---|
+| [`scripts/eval_gemini.py`](scripts/eval_gemini.py) | Gemini `generateContent` REST | Gemini family, e.g. `gemini-3.8-flash` |
+| [`scripts/eval_mimo.py`](scripts/eval_mimo.py) | OpenAI-compatible chat completions | MiMo family, e.g. `mimo-v2.6-pro`, `mimo-v2.6-flash` |
+
+Common variables:
+
+| Variable | Meaning |
+|---|---|
+| `BASE_URL` | Endpoint URL. See the per-adapter notes below for the accepted forms. |
+| `API_KEY` | Provider API key. Gemini sends it as `Authorization: Bearer`, MiMo via the OpenAI SDK. |
+| `MODEL_NAME` | Model identifier passed to the provider. |
+
+> [!NOTE]
+> MiMo-v2.5 is no longer served by the API. Use `mimo-v2.6-pro` or `mimo-v2.6-flash`.
+
+#### Gemini family
+
+`BASE_URL` accepts either a prefix, to which the script appends `/${MODEL_NAME}:generateContent`, or a full template containing the `{model}` placeholder, which is used verbatim:
 
 ```bash
-python scripts/eval_example.py \
-  --annotations data/test_file.json \
-  --video-dir data/resized_video \
-  --output-dir outputs/my_model \
+# 1. Prefix form — the script appends /<model>:generateContent
+export BASE_URL="https://<your-host>/v1beta/models"
+
+# 2. Template form — used as-is, for relays whose path differs
+export BASE_URL="https://<your-host>/v1beta/models/{model}:generateContent"
+```
+
+```bash
+export BASE_URL="https://<your-host>/v1beta/models"
+export API_KEY="<your-api-key>"
+export MODEL_NAME="gemini-3.8-flash"
+
+python scripts/eval_gemini.py \
+  --annotation data/test_file.json \
+  --video-root data/resized_video \
+  --results-dir outputs/gemini \
   --workers 4 \
-  --batch-size 16 \
   --retries 3
 ```
 
-The script displays progress and saves each completed result. Rerun the same command to resume: successful questions are skipped, and failed questions are retried. Raw responses, predictions, and logs are saved in the output directory; after evaluation, `summary.json` and `grounded_scores.json` report accuracy and grounded metrics. To check the pipeline without calling an API, add `--mock --limit 8` and use a separate output directory such as `outputs/mock_example`.
+The script prints the resolved request URL at startup, so a misconfigured relay path is visible before any video is uploaded. The wrapper [`scripts/eval.sh`](scripts/eval.sh) runs the same command and accepts `ANNOTATION_FILE`, `VIDEO_ROOT`, `RESULTS_DIR`, `WORKERS`, `RETRIES`, and `LIMIT` overrides:
+
+```bash
+MODEL_NAME="gemini-3.8-flash" bash scripts/eval.sh
+```
+
+#### MiMo family
+
+`BASE_URL` is the OpenAI-compatible base, typically ending in `/v1`. Videos are sent inline as base64 data URLs, so no upload step is required.
+
+```bash
+export BASE_URL="https://<your-host>/v1"
+export API_KEY="<your-api-key>"
+export MODEL_NAME="mimo-v2.6-flash"
+
+python scripts/eval_mimo.py \
+  --annotation data/test_file.json \
+  --video-root data/resized_video \
+  --results-dir outputs/mimo \
+  --workers 4 \
+  --retries 3
+```
+
+Swap `MODEL_NAME` for `mimo-v2.6-pro` to evaluate the Pro variant. Use a separate `--results-dir` per model so checkpoints do not mix, or pass `--tag mimo_pro` to keep both runs in one directory. `--fps` controls the sampling rate sent to the provider (default `1.0`, matching the benchmark protocol).
+
+#### Smoke test
+
+Both adapters accept `--limit N` to evaluate only the first N questions. Point the results at a scratch directory so the partial run is not mistaken for a completed checkpoint:
+
+```bash
+MODEL_NAME="mimo-v2.6-flash" python scripts/eval_mimo.py --limit 5 --results-dir outputs/smoke
+MODEL_NAME="gemini-3.8-flash" python scripts/eval_gemini.py --limit 5 --results-dir outputs/smoke
+```
+
+`--qa-ids 1,2,3` and `--levels 1,2` select specific questions or reasoning levels instead.
+
+#### Resuming and outputs
+
+Both scripts display a live progress view and save each completed result. Rerun the same command to resume: successful questions are skipped and failed questions are retried. Each question is counted once in the summary even if it was attempted several times. Raw responses and human-readable logs are saved in the results directory.
+
+> **TODO:** Adapters for the remaining model families evaluated in the paper (Qwen-Omni, Nemotron-Omni, Doubao-Seed, and the local vLLM pipelines) will be released incrementally.
+
+For provider-specific adapters or an API-free orchestration check, see [`scripts/eval_example.py`](scripts/eval_example.py). The example supports `--mock --limit 8` and writes grounded metric snapshots without making network requests.
 
 ## 📚 Citation
 
@@ -194,7 +269,7 @@ The script displays progress and saves each completed result. Rerun the same com
 
 ## 📄 License
 
-Repository code is released under the [MIT License](LICENSE). For dataset annotation and media terms, refer to the dataset hosting pages and [`docs/data_license.md`](docs/data_license.md).
+Repository code is released under the [MIT License](LICENSE). For dataset annotation and media terms, refer to the [dataset hosting pages](https://huggingface.co/datasets/VisionXLab/EvaOmni-Dataset).
 
 ## 🙏 Acknowledgements
 

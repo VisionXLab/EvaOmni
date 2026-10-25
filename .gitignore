@@ -6,6 +6,7 @@ __pycache__/
 venv/
 data/evaomni/
 data/**/.cache/
+data/
 outputs/
 checkpoints/
 *.log

@@ -7,8 +7,9 @@ Run the simulation from the repository root:
 Repeat the same command to resume; successful qa_ids are skipped and errors
 are retried. Use a different --output-dir for a new experiment.
 
-For real inference, fill the three settings below and implement call_api()
-for your provider's video+audio interface. The mock returns a fixed answer
+For real inference, set ``MODEL_NAME``, ``BASE_URL``, and ``API_KEY`` in the
+environment, then implement call_api() for your provider's video+audio
+interface. The mock returns a fixed answer
 and empty evidence, never reads reference answers, and produces no benchmark
 claims. Video preprocessing (480 pixels, 1 FPS, retaining audio) is supplied
 by the caller/provider, rather than performed by this orchestration example.
@@ -34,9 +35,9 @@ import re
 import time
 
 
-model_name = ""
-base_url = ""
-api_key = ""
+MODEL_NAME_ENV = 'MODEL_NAME'
+BASE_URL_ENV = 'BASE_URL'
+API_KEY_ENV = 'API_KEY'
 
 VIDEO_AUDIO_PROMPT = """\
 You are answering a multiple-choice question based on the Video and Audio provided.
@@ -74,9 +75,10 @@ def call_api(video_path: Path, prompt: str, *, mock: bool) -> str:
         return json.dumps({"answer": "A", "visual_evidence": [], "audio_evidence": []})
 
     # Provider-specific pseudocode; SDKs and media schemas differ:
-    # client = ProviderClient(base_url=base_url, api_key=api_key, timeout=1800)
+    # client = ProviderClient(base_url=os.environ[BASE_URL_ENV],
+    #                         api_key=os.environ[API_KEY_ENV], timeout=1800)
     # media = client.upload_video(video_path, include_audio=True, fps=1.0)
-    # response = client.generate(model=model_name, video=media, text=prompt)
+    # response = client.generate(model=os.environ[MODEL_NAME_ENV], video=media, text=prompt)
     # return response.text
     # If video input discards audio, extract and attach the audio separately.
     raise NotImplementedError("Implement your provider's video+audio API adapter here.")
@@ -333,7 +335,8 @@ def export_results(records: list, latest: dict, args, *, score_grounding: bool =
         group = levels.setdefault(level, {'total': 0, 'correct': 0})
         group['total'] += 1
         group['correct'] += int(latest.get(str(record['qa_id']), {}).get('correct', False))
-    summary = {'mock': args.mock, 'model_name': model_name, 'total': len(records),
+    summary = {'mock': args.mock, 'model_name': os.getenv(MODEL_NAME_ENV, ''),
+               'total': len(records),
                'completed': len(rows), 'ok': len(predictions),
                'errors': sum(r['status'] != 'ok' for r in rows),
                'missing': len(records) - len(rows), 'correct': correct,
@@ -366,8 +369,12 @@ def main() -> None:
     if min(args.workers, args.batch_size, args.retries) < 1 or (args.limit is not None and args.limit < 1):
         parser.error('workers, batch-size, retries, and limit must be positive')
     if not args.mock:
+        model_name = os.getenv(MODEL_NAME_ENV, '')
+        base_url = os.getenv(BASE_URL_ENV, '')
+        api_key = os.getenv(API_KEY_ENV, '')
         if not all((model_name, base_url, api_key)):
-            parser.error('Fill model_name, base_url, api_key and implement call_api(), or use --mock')
+            parser.error(f'Set {MODEL_NAME_ENV}, {BASE_URL_ENV}, and {API_KEY_ENV}, '
+                         'then implement call_api(), or use --mock')
         # Remove this guard after implementing the provider-specific adapter above.
         parser.error('Implement call_api() and remove this guard before real inference')
 
@@ -390,7 +397,8 @@ def main() -> None:
     config = {'annotations': str(args.annotations.resolve()),
               'dataset_sha256': hashlib.sha256(dataset_bytes).hexdigest(),
               'video_dir': str(args.video_dir.resolve()), 'mock': args.mock,
-              'model_name': model_name, 'base_url': base_url,
+              'model_name': os.getenv(MODEL_NAME_ENV, ''),
+              'base_url': os.getenv(BASE_URL_ENV, ''),
               'prompt_sha256': hashlib.sha256(VIDEO_AUDIO_PROMPT.encode()).hexdigest()}
     args.output_dir.mkdir(parents=True, exist_ok=True)
     config_path = args.output_dir / 'run_config.json'
