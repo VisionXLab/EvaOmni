@@ -1,6 +1,6 @@
 <div align="center">
 
-**简体中文** | [English](README.md)
+[English](README.md) | [简体中文](README_zh.md)
 
 # EvaOmni：一个证据锚定的音视频推理基准
 

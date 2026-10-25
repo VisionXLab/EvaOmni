@@ -1,6 +1,6 @@
 <div align="center">
 
-[English](README.md) | **简体中文**
+[English](README.md) | [简体中文](README_zh.md)
 
 # EvaOmni : An Evidence-Grounded Benchmark for Audio-Visual Reasoning
 
