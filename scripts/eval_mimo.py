@@ -42,18 +42,15 @@ def _environment_value(name: str) -> str:
     return ""
 
 
-PROMPT_TEMPLATE = """You are evaluating a multimodal video understanding task.
-
-Carefully inspect BOTH the visual and audio content of the video. Answer the multiple-choice question and identify the evidence that directly supports your answer.
+PROMPT_TEMPLATE = """You are answering a multiple-choice question based on the Video and Audio provided.
+Answer the multiple-choice question and identify the evidence that directly supports your answer.
 
 Question:
 {question}
-
 Options:
 {options}
 
 Evidence requirements:
-
 * Each evidence item MUST contain a precise timestamp range in the format "[mm:ss,mm:ss]".
 * Include only evidence that directly supports the answer.
 * Keep each timestamp range as precise and minimal as possible.
@@ -61,13 +58,13 @@ Evidence requirements:
 Strict output format:
 Return ONLY a valid JSON object with the following fields:
 {{
-"answer": "<single option letter>",
-"visual_evidence": [
-{{"time": "[mm:ss,mm:ss]"}}
-],
-"audio_evidence": [
-{{"time": "[mm:ss,mm:ss]"}}
-]
+  "answer": "<single option letter>",
+  "visual_evidence": [
+    {{"time": "[mm:ss,mm:ss]"}}
+  ],
+  "audio_evidence": [
+    {{"time": "[mm:ss,mm:ss]"}}
+  ]
 }}
 """
 
